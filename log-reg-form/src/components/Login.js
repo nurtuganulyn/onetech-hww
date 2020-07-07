@@ -2,6 +2,8 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { Formik, Field, Form, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
 
 class Login extends Component {
 	constructor(props) {
@@ -15,7 +17,10 @@ class Login extends Component {
 		this.update = this.update.bind(this);
 
 		this.displayLogin = this.displayLogin.bind(this);
-	}
+    }
+
+    
+    
 
 	update(e) {
 		let name = e.target.name;
@@ -43,35 +48,53 @@ class Login extends Component {
 	}
 
 	render() {
+     
 		return (
-			<div className="login">
+            <Formik
+            initialValues={{
+                email: '',
+                password: ''
+            }}
+            validationSchema={Yup.object().shape({
+                email: Yup.string()
+                    .email('Email is invalid')
+                    .required('Email is required'),
+                password: Yup.string()
+                    .min(6, 'Password must be at least 6 characters')
+                    .required('Password is required')
+            })}
+            // onSubmit={fields => {
+            //     alert('SUCCESS!! :-)\n\n' + JSON.stringify(fields, null, 4))
+            // }}
+            render={({  touched }) => (
+                <div className="login">
+                <h2>Login</h2>
+               
+
 				<form onSubmit={this.displayLogin}>
-					<h2>Login</h2>
+					
 					<div className="username">
-						<input
-							type="text"
-							placeholder="Username..."
-							value={this.state.email}
-							onChange={this.update}
-							name="email"
-						/>
+						
+                        <Field name="email" type="text" placeholder = "Username..." value={this.state.email} onChange={this.update} className={'form-control' + ( touched.email ? ' is-invalid' : '')} />
+                        <ErrorMessage name="email" component="div" className="invalid-feedback" />
+                         
+                       
 					</div>
 
 					<div className="password">
-						<input
-							type="password"
-							placeholder="Password..."
-							value={this.state.password}
-							onChange={this.update}
-							name="password"
-						/>
+						
+                        <Field name="password" type="password" placeholder = "Password.."  value={this.state.password} onChange={this.update} className={'form-control' + ( touched.password ? ' is-invalid' : '')} />
+                        <ErrorMessage name="password" component="div" className="invalid-feedback" />
 					</div>
 
 					<input type="submit" value="Login" />
 				</form>
-
+              
 				<Link to="/register">Create an account</Link>
 			</div>
+                
+            )}
+            />
 		);
 	}
 }
